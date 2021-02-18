@@ -26,44 +26,14 @@ class PasswordLock
             Base64::encode(
                 \hash('sha384', $password, true)
             ),
-            PASSWORD_DEFAULT
+            PASSWORD_ARGON2ID
         );
         if (!\is_string($hash)) {
             throw new \Exception("Unknown hashing error.");
         }
         return Crypto::encrypt($hash, $aesKey);
     }
-    /**
-     * 1. VerifyHMAC-then-Decrypt the ciphertext to get the hash
-     * 2. Verify that the password matches the hash
-     *
-     * @param string $password
-     * @param string $ciphertext
-     * @param string $aesKey - must be exactly 16 bytes
-     * @return bool
-     * @throws \Exception
-     * @throws \InvalidArgumentException
-     */
-    public static function decryptAndVerifyLegacy(string $password, string $ciphertext, string $aesKey): bool
-    {
-        if (Binary::safeStrlen($aesKey) !== 16) {
-            throw new \Exception("Encryption keys must be 16 bytes long");
-        }
-        $hash = Crypto::legacyDecrypt(
-            $ciphertext,
-            $aesKey
-        );
-        if (!\is_string($hash)) {
-            throw new \Exception("Unknown hashing error.");
-        }
-        return \password_verify(
-            Base64::encode(
-                \hash('sha256', $password, true)
-            ),
-            $hash
-        );
-    }
-
+    
     /**
      * 1. VerifyHMAC-then-Decrypt the ciphertext to get the hash
      * 2. Verify that the password matches the hash
@@ -104,30 +74,5 @@ class PasswordLock
     {
         $plaintext = Crypto::decrypt($ciphertext, $oldKey);
         return Crypto::encrypt($plaintext, $newKey);
-    }
-
-    /**
-     * For migrating from an older version of the library
-     *
-     * @param string $password
-     * @param string $ciphertext
-     * @param string $oldKey
-     * @param Key $newKey
-     * @return string
-     * @throws \Exception
-     */
-    public static function upgradeFromVersion1(
-        string $password,
-        string $ciphertext,
-        string $oldKey,
-        Key $newKey
-    ): string {
-        if (!self::decryptAndVerifyLegacy($password, $ciphertext, $oldKey)) {
-            throw new \Exception(
-                'The correct password is necessary for legacy migration.'
-            );
-        }
-        $plaintext = Crypto::legacyDecrypt($ciphertext, $oldKey);
-        return self::hashAndEncrypt($plaintext, $newKey);
     }
 }
