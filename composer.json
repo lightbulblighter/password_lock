@@ -1,6 +1,6 @@
 {
-    "name":         "paragonie/password_lock",
-    "description":  "Wraps Bcrypt-SHA2 in Authenticated Encryption",
+    "name":         "lightbulblighter/password_lock",
+    "description":  "Wraps Argon2id-SHA2 in Authenticated Encryption",
     "keywords": [
             "password",
             "hash",
@@ -9,26 +9,13 @@
         ],
     "license":      "MIT",
     "type":         "library",
-    "authors": [
-            {
-                "name":     "Scott Arciszewski",
-                "email":    "scott@paragonie.com",
-                "homepage": "https://paragonie.com",
-                "role":     "Developer"
-            }
-        ],
-    "support": {
-        "issues":   "https://github.com/paragonie/password_lock/issues",
-        "email":    "info@paragonie.com",
-        "source":   "https://github.com/paragonie/password_lock"
-    },
     "autoload": {
         "files": [
             "src/PasswordLock.php"
         ]
     },
     "require": {
-        "php": "^7",
+        "php": "^7.2",
         "defuse/php-encryption": "^2",
         "paragonie/constant_time_encoding": "^2"
     },
